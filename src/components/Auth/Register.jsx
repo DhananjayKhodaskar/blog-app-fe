@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 import {
   Container,
   TextField,
@@ -11,24 +13,38 @@ import api from "../../api";
 import { useNavigate } from "react-router-dom";
 
 const Register = () => {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState();
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [loading, setLoading] = React.useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const initialValues = {
+    username: "",
+    email: "",
+    password: "",
+  };
+
+  const validationSchema = Yup.object({
+    username: Yup.string()
+      .required("Username is required")
+      .min(2, "User must be at least 2 characters"),
+    email: Yup.string()
+      .email("Invalid email format")
+      .required("Email is required"),
+    password: Yup.string()
+      .min(8, "Password must be at least 8 characters")
+      .required("Password is required"),
+  });
+
+  const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     setLoading(true);
     try {
-      await api.post("/auth/register", { username, email, password });
+      await api.post("/auth/register", values);
       navigate("/login");
     } catch (error) {
       console.error("Error registering user:", error);
-      setError("Registration failed. Please try again.");
+      setErrors({ password: "Registration failed. Please try again." });
     } finally {
       setLoading(false);
+      setSubmitting(false);
     }
   };
 
@@ -52,68 +68,80 @@ const Register = () => {
           color: "white",
         }}
       >
-        <Box component="form" onSubmit={handleSubmit}>
-          <Typography variant="h4" gutterBottom>
-            Register
-          </Typography>
+        <Typography variant="h4" gutterBottom>
+          Register
+        </Typography>
 
-          <TextField
-            fullWidth
-            label="Username"
-            name="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            margin="normal"
-            required
-            sx={{ backgroundColor: "#ffffff", borderRadius: 1 }}
-          />
-          <TextField
-            fullWidth
-            label="Email"
-            name="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            margin="normal"
-            required
-            type="email"
-            sx={{ backgroundColor: "#ffffff", borderRadius: 1 }}
-          />
-          <TextField
-            fullWidth
-            label="Password"
-            name="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            margin="normal"
-            required
-            sx={{ backgroundColor: "#ffffff", borderRadius: 1 }}
-          />
-          {error && (
-            <Typography color="error" mt={2}>
-              {error}
-            </Typography>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ isSubmitting, touched, errors }) => (
+            <Form>
+              <Box sx={{ mb: 2 }}>
+                <Field
+                  as={TextField}
+                  fullWidth
+                  label="Username"
+                  name="username"
+                  variant="outlined"
+                  margin="normal"
+                  error={touched.username && Boolean(errors.username)}
+                  helperText={touched.username && errors.username}
+                />
+              </Box>
+
+              <Box sx={{ mb: 2 }}>
+                <Field
+                  as={TextField}
+                  fullWidth
+                  label="Email"
+                  name="email"
+                  variant="outlined"
+                  margin="normal"
+                  error={touched.email && Boolean(errors.email)}
+                  helperText={touched.email && errors.email}
+                />
+              </Box>
+
+              <Box sx={{ mb: 2 }}>
+                <Field
+                  as={TextField}
+                  fullWidth
+                  label="Password"
+                  name="password"
+                  type="password"
+                  variant="outlined"
+                  margin="normal"
+                  error={touched.password && Boolean(errors.password)}
+                  helperText={touched.password && errors.password}
+                />
+              </Box>
+
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                type="submit"
+                sx={{ mt: 3, backgroundColor: "#0D1B2A" }}
+                disabled={loading || isSubmitting}
+              >
+                {loading || isSubmitting ? "Registering..." : "Register"}
+              </Button>
+
+              <Button
+                fullWidth
+                variant="contained"
+                color="secondary"
+                sx={{ mt: 3, backgroundColor: "#1B263B" }}
+                onClick={() => navigate("/login")}
+              >
+                Login
+              </Button>
+            </Form>
           )}
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            type="submit"
-            sx={{ mt: 3, backgroundColor: "#0D1B2A" }}
-            disabled={loading}
-          >
-            {loading ? "Registering..." : "Register"}
-          </Button>
-          <Button
-            fullWidth
-            variant="contained"
-            color="secondary"
-            sx={{ mt: 3, backgroundColor: "#1B263B" }}
-            onClick={() => navigate("/login")}
-          >
-            Login
-          </Button>
-        </Box>
+        </Formik>
       </Card>
     </Container>
   );
