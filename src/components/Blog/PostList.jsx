@@ -63,55 +63,63 @@ const PostList = () => {
           >
             Blog Posts
           </Typography>
-          {posts.map((post) => (
-            <Card
-              key={post._id}
-              sx={{
-                minWidth: 275,
-                marginBottom: "16px",
-                backgroundColor: "#0D1B2A",
-                color: "white",
-              }}
-            >
-              <CardContent>
-                <Typography
-                  variant="h5"
-                  component="div"
-                  sx={{ color: "#E0E1DD" }}
-                >
-                  {post.title}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{ marginBottom: 1.5, color: "#A9B1D6" }}
-                >
-                  {post.content.substring(0, 100)}...
-                </Typography>
-              </CardContent>
-              <CardActions
-                sx={{ display: "flex", justifyContent: "space-between" }}
+          <Box
+            sx={{
+              maxHeight: "400px",
+              overflowY: "auto",
+              mb: 2,
+            }}
+          >
+            {posts.map((post) => (
+              <Card
+                key={post._id}
+                sx={{
+                  minWidth: 275,
+                  marginBottom: "16px",
+                  backgroundColor: "#0D1B2A",
+                  color: "white",
+                }}
               >
-                <Button
-                  size="small"
-                  component={Link}
-                  to={`/posts/${post._id}`}
-                  sx={{ color: "#E0E1DD" }}
+                <CardContent>
+                  <Typography
+                    variant="h5"
+                    component="div"
+                    sx={{ color: "#E0E1DD" }}
+                  >
+                    {post.title}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{ marginBottom: 1.5, color: "#A9B1D6" }}
+                  >
+                    {post.content.substring(0, 100)}...
+                  </Typography>
+                </CardContent>
+                <CardActions
+                  sx={{ display: "flex", justifyContent: "space-between" }}
                 >
-                  Read more
-                </Button>
+                  <Button
+                    size="small"
+                    component={Link}
+                    to={`/posts/${post._id}`}
+                    sx={{ color: "#E0E1DD" }}
+                  >
+                    Read more
+                  </Button>
 
-                <Typography
-                  variant="body2"
-                  sx={{ marginBottom: 1.5, color: "#A9B1D6" }}
-                >
-                  {`by ${post?.author?.username} on ${formattedDate(
-                    post.createdAt
-                  )}`}
-                </Typography>
-              </CardActions>
-            </Card>
-          ))}
-          {/* Pagination Component */}
+                  <Typography
+                    variant="body2"
+                    sx={{ marginBottom: 1.5, color: "#A9B1D6" }}
+                  >
+                    {`by ${post?.author?.username} on ${formattedDate(
+                      post.createdAt
+                    )}`}
+                  </Typography>
+                </CardActions>
+              </Card>
+            ))}
+          </Box>
+          {/* Fixed position Pagination Component */}
           <Pagination
             count={Math.ceil(totalPosts / postsPerPage)}
             page={currentPage}
@@ -119,9 +127,13 @@ const PostList = () => {
             variant="outlined"
             shape="rounded"
             sx={{
-              marginTop: 3,
+              marginTop: 2,
               display: "flex",
               justifyContent: "center",
+              position: "sticky",
+              bottom: 0,
+              backgroundColor: "#415977",
+              zIndex: 1,
               "& .MuiPaginationItem-root:focus": {
                 outline: "none",
                 boxShadow: "none",
