@@ -1,4 +1,6 @@
-import React, { useState, useContext } from "react";
+import React from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 import {
   Container,
   TextField,
@@ -12,25 +14,34 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext.jsx";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const { login } = useContext(AuthContext);
+  const { login } = React.useContext(AuthContext);
   const navigate = useNavigate();
-  const [error, setError] = useState();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = React.useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const initialValues = {
+    email: "",
+    password: "",
+  };
+
+  const validationSchema = Yup.object({
+    email: Yup.string()
+      .email("Invalid email format")
+      .required("Email is required"),
+    password: Yup.string().required("Password is required"),
+  });
+
+  const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     setLoading(true);
     try {
-      const response = await api.post("/auth/login", { email, password });
+      const response = await api.post("/auth/login", values);
       login(response.data.token);
       navigate("/");
     } catch (error) {
       console.error("Error logging in:", error);
-      setError("Invalid email or password.");
+      setErrors({ password: "Invalid email or password.", email: " " });
     } finally {
       setLoading(false);
+      setSubmitting(false);
     }
   };
 
@@ -54,58 +65,67 @@ const Login = () => {
           color: "white",
         }}
       >
-        <Box component="form" onSubmit={handleSubmit}>
-          <Typography variant="h4" gutterBottom>
-            Login
-          </Typography>
+        <Typography variant="h4" gutterBottom>
+          Login
+        </Typography>
 
-          <TextField
-            fullWidth
-            label="Email"
-            name="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            margin="normal"
-            required
-            type="email"
-            sx={{ backgroundColor: "#ffffff", borderRadius: 1 }}
-          />
-          <TextField
-            fullWidth
-            label="Password"
-            name="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            margin="normal"
-            required
-            sx={{ backgroundColor: "#ffffff", borderRadius: 1 }}
-          />
-          {error && (
-            <Typography color="error" mt={2}>
-              {error}
-            </Typography>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ isSubmitting, touched, errors }) => (
+            <Form>
+              <Box sx={{ mb: 2 }}>
+                <Field
+                  as={TextField}
+                  fullWidth
+                  label="Email"
+                  name="email"
+                  variant="outlined"
+                  margin="normal"
+                  error={touched.email && Boolean(errors.email)}
+                  helperText={<ErrorMessage name="email" />}
+                />
+              </Box>
+
+              <Box sx={{ mb: 2 }}>
+                <Field
+                  as={TextField}
+                  fullWidth
+                  label="Password"
+                  name="password"
+                  type="password"
+                  variant="outlined"
+                  margin="normal"
+                  error={touched.password && Boolean(errors.password)}
+                  helperText={<ErrorMessage name="password" />}
+                />
+              </Box>
+
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                type="submit"
+                sx={{ mt: 3, backgroundColor: "#0D1B2A" }}
+                disabled={loading || isSubmitting}
+              >
+                {loading || isSubmitting ? "Logging in..." : "Login"}
+              </Button>
+
+              <Button
+                fullWidth
+                variant="contained"
+                color="secondary"
+                sx={{ mt: 3, backgroundColor: "#1B263B" }}
+                onClick={() => navigate("/register")}
+              >
+                Register
+              </Button>
+            </Form>
           )}
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            type="submit"
-            sx={{ mt: 3, backgroundColor: "#0D1B2A" }}
-            disabled={loading}
-          >
-            {loading ? "Logging in..." : "Login"}
-          </Button>
-          <Button
-            fullWidth
-            variant="contained"
-            color="secondary"
-            sx={{ mt: 3, backgroundColor: "#1B263B" }}
-            onClick={() => navigate("/register")}
-          >
-            Register
-          </Button>
-        </Box>
+        </Formik>
       </Card>
     </Container>
   );
