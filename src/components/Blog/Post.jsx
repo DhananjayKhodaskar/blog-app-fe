@@ -9,6 +9,8 @@ import {
   Button,
   Typography,
 } from "@mui/material";
+import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
+import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 
 const Post = () => {
   const { id } = useParams();
@@ -16,15 +18,16 @@ const Post = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  const fetchPost = async () => {
+    try {
+      const response = await api.get(`/posts/${id}`);
+      setPost(response.data);
+    } catch (error) {
+      console.error("Error fetching post:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const response = await api.get(`/posts/${id}`);
-        setPost(response.data);
-      } catch (error) {
-        console.error("Error fetching post:", error);
-      }
-    };
     fetchPost();
   }, [id]);
 
@@ -34,6 +37,17 @@ const Post = () => {
       navigate("/");
     } catch (error) {
       console.error("Error deleting post:", error);
+    }
+  };
+
+  const handleToggleLike = async () => {
+    try {
+      const response = await api.post(`/posts/${id}/toggle-like`);
+      if (response.status === 200) {
+        fetchPost();
+      }
+    } catch (error) {
+      console.error("Error toggling like:", error);
     }
   };
 
@@ -62,20 +76,41 @@ const Post = () => {
           {post.content}
         </Typography>
       </CardContent>
-      {user && user?.userId === post?.author?._id && (
-        <CardActions sx={{ justifyContent: "center" }}>
-          <Button
-            size="small"
-            onClick={() => navigate(`/edit/${id}`)}
-            sx={{ color: "#E0E1DD" }}
-          >
-            Edit
-          </Button>
-          <Button size="small" onClick={handleDelete} sx={{ color: "#E0E1DD" }}>
-            Delete
-          </Button>
-        </CardActions>
-      )}
+      <CardActions sx={{ justifyContent: "center" }}>
+        <Button
+          size="small"
+          onClick={handleToggleLike}
+          sx={{ backgroundColor: "#E0E1DC", color: "#0D1B2A" }}
+          disabled={!user}
+          startIcon={
+            post?.likes?.includes(user?.userId) ? (
+              <ThumbUpAltIcon />
+            ) : (
+              <ThumbUpOffAltIcon />
+            )
+          }
+        >
+          {` ${post?.likes?.length || 0}`}
+        </Button>
+        {user && user?.userId === post?.author?._id && (
+          <>
+            <Button
+              size="small"
+              onClick={() => navigate(`/edit/${id}`)}
+              sx={{ color: "#E0E1DD" }}
+            >
+              Edit
+            </Button>
+            <Button
+              size="small"
+              onClick={handleDelete}
+              sx={{ color: "#E0E1DD" }}
+            >
+              Delete
+            </Button>
+          </>
+        )}
+      </CardActions>
     </Card>
   );
 };
