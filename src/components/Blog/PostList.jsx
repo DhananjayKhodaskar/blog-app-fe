@@ -27,46 +27,60 @@ const PostList = () => {
 
   return (
     <Box sx={{ padding: "20px" }}>
-      <Typography
-        variant="h4"
-        gutterBottom
-        sx={{ color: "white", marginBottom: 3 }}
-      >
-        Blog Posts
-      </Typography>
-      {posts.map((post) => (
-        <Card
-          key={post._id}
-          sx={{
-            minWidth: 275,
-            marginBottom: "16px",
-            backgroundColor: "#0D1B2A",
-            color: "white",
-          }}
-        >
-          <CardContent>
-            <Typography variant="h5" component="div" sx={{ color: "#E0E1DD" }}>
-              {post.title}
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ marginBottom: 1.5, color: "#A9B1D6" }}
+      {posts.length === 0 ? ( // Check if there are no posts
+        <>
+          <Typography variant="body1" sx={{ color: "#A9B1D6" }}>
+            No blog posts to show.
+          </Typography>
+        </>
+      ) : (
+        <>
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{ color: "white", marginBottom: 3 }}
+          >
+            Blog Posts
+          </Typography>
+          {posts.map((post) => (
+            <Card
+              key={post._id}
+              sx={{
+                minWidth: 275,
+                marginBottom: "16px",
+                backgroundColor: "#0D1B2A",
+                color: "white",
+              }}
             >
-              {post.content.substring(0, 100)}...
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button
-              size="small"
-              component={Link}
-              to={`/posts/${post._id}`}
-              sx={{ color: "#E0E1DD" }}
-            >
-              Read more
-            </Button>
-          </CardActions>
-        </Card>
-      ))}
+              <CardContent>
+                <Typography
+                  variant="h5"
+                  component="div"
+                  sx={{ color: "#E0E1DD" }}
+                >
+                  {post.title}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{ marginBottom: 1.5, color: "#A9B1D6" }}
+                >
+                  {post.content.substring(0, 100)}...
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <Button
+                  size="small"
+                  component={Link}
+                  to={`/posts/${post._id}`}
+                  sx={{ color: "#E0E1DD" }}
+                >
+                  Read more
+                </Button>
+              </CardActions>
+            </Card>
+          ))}
+        </>
+      )}
     </Box>
   );
 };
