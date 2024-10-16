@@ -35,7 +35,7 @@ const Login = () => {
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     setLoading(true);
     try {
-      const response = await api.post("/auth/login", values);
+      const response = await api.post("/login", values);
       login(response.data.token);
       navigate("/");
     } catch (error) {

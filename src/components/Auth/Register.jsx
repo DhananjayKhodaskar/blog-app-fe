@@ -37,7 +37,7 @@ const Register = () => {
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     setLoading(true);
     try {
-      await api.post("/auth/register", values);
+      await api.post("/register", values);
       navigate("/login");
     } catch (error) {
       console.error("Error registering user:", error);
