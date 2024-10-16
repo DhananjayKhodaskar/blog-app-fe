@@ -15,7 +15,7 @@ const PostList = () => {
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPosts, setTotalPosts] = useState(0);
-  const [postsPerPage] = useState(2);
+  const [postsPerPage] = useState(3);
   const [hasNextPage, setHasNextPage] = useState(false);
 
   const formattedDate = (date) => {
@@ -118,7 +118,15 @@ const PostList = () => {
             onChange={handlePageChange}
             variant="outlined"
             shape="rounded"
-            sx={{ marginTop: 3, display: "flex", justifyContent: "center" }}
+            sx={{
+              marginTop: 3,
+              display: "flex",
+              justifyContent: "center",
+              "& .MuiPaginationItem-root:focus": {
+                outline: "none",
+                boxShadow: "none",
+              },
+            }}
             hideNextButton={
               !hasNextPage &&
               currentPage >= Math.ceil(totalPosts / postsPerPage)
