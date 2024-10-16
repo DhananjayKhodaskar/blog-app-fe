@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { Formik, Form, Field } from "formik";
+import * as Yup from "yup";
 import {
   Container,
   TextField,
@@ -12,18 +14,22 @@ import { useParams, useNavigate } from "react-router-dom";
 
 const EditPost = () => {
   const { id } = useParams();
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [error, setError] = useState();
   const [loading, setLoading] = useState(false);
+  const [initialValues, setInitialValues] = useState({
+    title: "",
+    content: "",
+  });
+  const [error, setError] = useState();
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
         const response = await api.get(`/posts/${id}`);
-        setTitle(response.data.title);
-        setContent(response.data.content);
+        setInitialValues({
+          title: response.data.title,
+          content: response.data.content,
+        });
       } catch (error) {
         console.error("Error fetching post:", error);
         setError("Failed to fetch the post details.");
@@ -32,17 +38,22 @@ const EditPost = () => {
     fetchPost();
   }, [id]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const validationSchema = Yup.object({
+    title: Yup.string().required("Title is required"),
+    content: Yup.string().required("Content is required"),
+  });
+
+  const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     setLoading(true);
     try {
-      await api.put(`/posts/${id}`, { title, content });
+      await api.put(`/posts/${id}`, values);
       navigate("/");
     } catch (error) {
       console.error("Error updating post:", error);
-      setError("Failed to update the post. Please try again.");
+      setErrors({ content: "Failed to update the post. Please try again." });
     } finally {
       setLoading(false);
+      setSubmitting(false);
     }
   };
 
@@ -66,49 +77,67 @@ const EditPost = () => {
           color: "white",
         }}
       >
-        <Box component="form" onSubmit={handleSubmit}>
-          <Typography variant="h4" gutterBottom>
-            Edit Post
-          </Typography>
+        <Typography variant="h4" gutterBottom>
+          Edit Post
+        </Typography>
 
-          <TextField
-            fullWidth
-            label="Title"
-            name="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            margin="normal"
-            required
-            sx={{ backgroundColor: "#ffffff", borderRadius: 1 }}
-          />
-          <TextField
-            fullWidth
-            label="Content"
-            name="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            margin="normal"
-            required
-            multiline
-            rows={4}
-            sx={{ backgroundColor: "#ffffff", borderRadius: 1 }}
-          />
-          {error && (
-            <Typography color="error" mt={2}>
-              {error}
-            </Typography>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+          enableReinitialize={true} // This allows Formik to reinitialize when initialValues change
+        >
+          {({ isSubmitting, touched, errors }) => (
+            <Form>
+              <Box sx={{ mb: 2 }}>
+                <Field
+                  as={TextField}
+                  fullWidth
+                  label="Title"
+                  name="title"
+                  variant="outlined"
+                  margin="normal"
+                  sx={{ backgroundColor: "#ffffff", borderRadius: 1 }}
+                  error={touched.title && Boolean(errors.title)}
+                  helperText={touched.title && errors.title}
+                />
+              </Box>
+
+              <Box sx={{ mb: 2 }}>
+                <Field
+                  as={TextField}
+                  fullWidth
+                  label="Content"
+                  name="content"
+                  variant="outlined"
+                  margin="normal"
+                  multiline
+                  rows={4}
+                  sx={{ backgroundColor: "#ffffff", borderRadius: 1 }}
+                  error={touched.content && Boolean(errors.content)}
+                  helperText={touched.content && errors.content}
+                />
+              </Box>
+
+              {error && (
+                <Typography color="error" mt={2}>
+                  {error}
+                </Typography>
+              )}
+
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                type="submit"
+                sx={{ mt: 3, backgroundColor: "#0D1B2A" }}
+                disabled={loading || isSubmitting}
+              >
+                {loading || isSubmitting ? "Updating..." : "Update"}
+              </Button>
+            </Form>
           )}
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            type="submit"
-            sx={{ mt: 3, backgroundColor: "#0D1B2A" }}
-            disabled={loading}
-          >
-            {loading ? "Updating..." : "Update"}
-          </Button>
-        </Box>
+        </Formik>
       </Card>
     </Container>
   );
