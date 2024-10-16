@@ -86,6 +86,7 @@ const Login = () => {
                   name="email"
                   variant="outlined"
                   margin="normal"
+                  sx={{ backgroundColor: "#ffffff", borderRadius: 1 }}
                   error={touched.email && Boolean(errors.email)}
                   helperText={<ErrorMessage name="email" />}
                 />
@@ -100,6 +101,7 @@ const Login = () => {
                   type="password"
                   variant="outlined"
                   margin="normal"
+                  sx={{ backgroundColor: "#ffffff", borderRadius: 1 }}
                   error={touched.password && Boolean(errors.password)}
                   helperText={<ErrorMessage name="password" />}
                 />

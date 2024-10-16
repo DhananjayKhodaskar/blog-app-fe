@@ -87,6 +87,7 @@ const Register = () => {
                   name="username"
                   variant="outlined"
                   margin="normal"
+                  sx={{ backgroundColor: "#ffffff", borderRadius: 1 }}
                   error={touched.username && Boolean(errors.username)}
                   helperText={touched.username && errors.username}
                 />
@@ -100,6 +101,7 @@ const Register = () => {
                   name="email"
                   variant="outlined"
                   margin="normal"
+                  sx={{ backgroundColor: "#ffffff", borderRadius: 1 }}
                   error={touched.email && Boolean(errors.email)}
                   helperText={touched.email && errors.email}
                 />
@@ -114,6 +116,7 @@ const Register = () => {
                   type="password"
                   variant="outlined"
                   margin="normal"
+                  sx={{ backgroundColor: "#ffffff", borderRadius: 1 }}
                   error={touched.password && Boolean(errors.password)}
                   helperText={touched.password && errors.password}
                 />
