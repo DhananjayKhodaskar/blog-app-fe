@@ -14,7 +14,7 @@ const Navbar = () => {
   return (
     <AppBar
       position="static"
-      sx={{ backgroundColor: "#415A77", padding: "8px 16px" }}
+      sx={{ backgroundColor: "#0D1B2A", padding: "8px 16px" }}
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         <Typography
