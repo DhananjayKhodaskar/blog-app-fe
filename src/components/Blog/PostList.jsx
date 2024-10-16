@@ -1,45 +1,67 @@
 import React, { useEffect, useState } from "react";
 import api from "../../api";
 import { Link } from "react-router-dom";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
+import {
+  Card,
+  CardActions,
+  CardContent,
+  Button,
+  Typography,
+  Box,
+} from "@mui/material";
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const response = await api.get("/posts");
-      setPosts(response.data);
+      try {
+        const response = await api.get("/posts");
+        setPosts(response.data);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
     };
     fetchPosts();
   }, []);
 
   return (
     <Box sx={{ padding: "20px" }}>
-      <Typography variant="h4" gutterBottom>
+      <Typography
+        variant="h4"
+        gutterBottom
+        sx={{ color: "white", marginBottom: 3 }}
+      >
         Blog Posts
       </Typography>
       {posts.map((post) => (
-        <Card key={post._id} sx={{ minWidth: 275, marginBottom: "16px" }}>
+        <Card
+          key={post._id}
+          sx={{
+            minWidth: 275,
+            marginBottom: "16px",
+            backgroundColor: "#0D1B2A",
+            color: "white",
+          }}
+        >
           <CardContent>
-            <Typography variant="h5" component="div">
+            <Typography variant="h5" component="div" sx={{ color: "#E0E1DD" }}>
               {post.title}
             </Typography>
             <Typography
               variant="body2"
-              color="text.secondary"
-              sx={{ marginBottom: 1.5 }}
+              sx={{ marginBottom: 1.5, color: "#A9B1D6" }}
             >
               {post.content.substring(0, 100)}...
             </Typography>
           </CardContent>
           <CardActions>
-            <Button size="small" component={Link} to={`/posts/${post._id}`}>
+            <Button
+              size="small"
+              component={Link}
+              to={`/posts/${post._id}`}
+              sx={{ color: "#E0E1DD" }}
+            >
               Read more
             </Button>
           </CardActions>
