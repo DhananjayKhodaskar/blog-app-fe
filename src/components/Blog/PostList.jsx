@@ -13,6 +13,14 @@ import {
 const PostList = () => {
   const [posts, setPosts] = useState([]);
 
+  const formattedDate = (date) => {
+    return new Date(date).toLocaleDateString("en-IN", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -67,7 +75,9 @@ const PostList = () => {
                   {post.content.substring(0, 100)}...
                 </Typography>
               </CardContent>
-              <CardActions>
+              <CardActions
+                sx={{ display: "flex", justifyContent: "space-between" }}
+              >
                 <Button
                   size="small"
                   component={Link}
@@ -76,6 +86,15 @@ const PostList = () => {
                 >
                   Read more
                 </Button>
+
+                <Typography
+                  variant="body2"
+                  sx={{ marginBottom: 1.5, color: "#A9B1D6" }}
+                >
+                  {`by ${post?.author?.username} on ${formattedDate(
+                    post.createdAt
+                  )}`}
+                </Typography>
               </CardActions>
             </Card>
           ))}
