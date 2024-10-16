@@ -1,0 +1,34 @@
+# Node modules
+node_modules/
+
+# Build output
+dist/
+*.log
+
+# Local environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vite cache
+.vite
+
+# Editor and IDE specific files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Yarn and NPM lock files
+yarn.lock
+package-lock.json
+
+# Miscellaneous
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Mac system files
+.DS_Store
